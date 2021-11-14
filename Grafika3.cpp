@@ -11,8 +11,8 @@ using namespace std;
 
 //zmienne ogolne
 typedef float point3[3];
-int obiekt = 1; //rysowany obiekt 
-int zadanie = 1;  //wybrane zadanie
+int testedObject = 1; //rysowany obiekt 
+int task = 1;  //wybrane zadanie
 
 //zmienne jajka
 int n = 40;//ilosc punktow
@@ -67,7 +67,7 @@ void Axes(void)
 	glEnd();
 }
 
-void jajko() {
+void egg() {
 	float u = 0, v = 0;
 	float udiff = 1.0 / n, vdiff = 1.0 / n; //n - liczba punktow na powierzchni jajka
 	glTranslated(0, (-(160 * pow(0.5, 4) - 320 * pow(0.5, 3) + 160 * pow(0.5, 2)) / 2) * (scale + 7) / 10, 0);//obniżenie środka figury do centrum ukladu wspolrzednych
@@ -111,7 +111,7 @@ void jajko() {
 	}
 }
 
-void zadanie1() {//ibket jest obracany a zoom jest wykonany jako poweikszanie/pomnijeszanie obiektu
+void zadanie1() {//obiekt jest obracany a zoom jest wykonany jako poweikszanie/pomnijeszanie obiektu
 	Axes();
 
 	if (statusLeft == 1) {//obrot 
@@ -133,18 +133,18 @@ void zadanie1() {//ibket jest obracany a zoom jest wykonany jako poweikszanie/po
 		}
 	}
 
-	switch (obiekt) {//wybranie obiektu
+	switch (testedObject) {//wybranie obiektu
 	case 1:
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glutWireTeapot(scale);
 		break;
 	case 2:
-		jajko();
+		egg();
 		break;
 	}
 }
 
-void zadanie2() {
+void zadanie2() {//przesuwany jest punkt widzenia, a zoom jest wykonany jako przesuwanie go w strone punktu obserwowanego
 	Axes();
 	if (statusLeft == 1) {//obrot
 		azymuth += delta_x * pix2angle / 100;
@@ -172,25 +172,25 @@ void zadanie2() {
 	viewer[2] = rViewer * sin(azymuth) * cos(elevation);
 
 
-	switch (obiekt) {//wybranie obiektu
+	switch (testedObject) {//wybranie obiektu
 	case 1:
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glutWireTeapot(scale);
 		break;
 	case 2:
 		scale = 3.0;
-		jajko();
+		egg();
 		break;
 	}
 }
 
 void RenderScene(void)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);//deklaracja bufferow
 	glLoadIdentity();
 	gluLookAt(viewer[0], viewer[1], viewer[2], object[0], object[1], object[2], 0.0, 1.0, 0.0);//ustawienie pozycji punktu widzenia i pozycji punktu obserwowanego
 
-	switch (zadanie) {//wywolanie odpowiedniego zadania
+	switch (task) {//wywolanie odpowiedniego zadania
 	case 1:
 		zadanie1();
 		break;
@@ -198,7 +198,7 @@ void RenderScene(void)
 		zadanie2();
 		break;
 	}
-	glutSwapBuffers();//wyswietlanie 
+	glutSwapBuffers();//zmiana bufferow i wyswietlanie
 }
 
 void Mouse(int btn, int state, int x, int y)
@@ -241,13 +241,13 @@ void MyInit(void)
 void keys(unsigned char key, int x, int y)
 {
 	if (key == 'j') {//wyswietlanie jajka
-		obiekt = 2;
+		testedObject = 2;
 	}
 	if (key == 'c') {//wyswietlenie czajnika
-		obiekt = 1;
+		testedObject = 1;
 	}
 	if (key == '1') {//uruchomienie 1 zadania 
-		if (zadanie == 1) {
+		if (task == 1) {
 			return;
 		}
 		rViewer = 10;//reset zmiennych z 2 zadania
@@ -257,29 +257,28 @@ void keys(unsigned char key, int x, int y)
 		object[0] = 0.0;
 		object[1] = 0.0;
 		object[2] = 0.0;
-		zadanie = 1;
+		task = 1;
 	}
 	if (key == '2') {//uruchomienie 2 zadania 
-		if (zadanie == 2) {
+		if (task == 2) {
 			return;
 		}
 		rViewer = 10;//reset zmiennych z 1 zadania
 		azymuth = M_PI / 4;
 		elevation = M_PI / 4;
 		scale = 3.0;
-		zadanie = 2;
+		task = 2;
 	}
 	if (key == 'r') {//reset ustawienia zooma w 2 zadaniu 
 		rViewer = 10;
 	}
-
 
 	RenderScene();
 }
 
 void ChangeSize(GLsizei horizontal, GLsizei vertical)
 {
-	pix2angle = 360.0 / (float)horizontal;
+	pix2angle = 360.0 / (float)horizontal;//usatwienie wielkosci do obracania obiektu
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(70, 1.0, 1.0, 100000.0);
@@ -326,6 +325,5 @@ void main(void)
 	glutKeyboardFunc(keys);//"lapanie" akcji na klawiaturze
 	glEnable(GL_DEPTH_TEST);
 	glutMainLoop();
-
 }
 
